@@ -71,4 +71,19 @@ python -m garmin2fitbit sample/garmin2fitbit/input -o sample/garmin2fitbit/outpu
     └── converter.py
 ```
 
+---
+
+## Third-Party Sync Tools
+
+If you want all your data (Fitbit history + Garmin daily data) in one place, these tools bridge the gap:
+
+| Tool | Platform | Price | What it syncs to Fitbit | What it syncs to Garmin |
+|---|---|---|---|---|
+| **Health Sync** | Android, iOS | ~$4–6 lifetime (one-time) | Steps, HR, sleep, weight, activities via Google Health APIs | Steps, HR, sleep, weight, activities |
+| **RunGap** | iOS | $4.99/quarter or $14.99/year (Swag Bag) | Activities (workouts) to Fitbit | Activities to Garmin Connect |
+| **myFitnessSync** | iOS | $9.99/month or $59.99/lifetime | Steps, weight, body fat, sleep, water (5 fields) | — |
+| **Strava** | Web, iOS, Android | Free tier (Summit $5/mo optional) | — | Auto-sync from Garmin; manual upload from Fitbit |
+
+**Recommendation**: On iOS, **RunGap** + Apple Health gives you a single source of truth. On Android, **Health Sync** with Google Health (Fitbit) serves the same role.
+
 Requires Python 3.10+. No external dependencies.
