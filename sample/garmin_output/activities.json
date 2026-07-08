@@ -1,0 +1,116 @@
+{
+  "activities": [
+    {
+      "activityName": "Running 2024-01-15 07:30",
+      "activityTypeId": 90009,
+      "activeDuration": 2750000,
+      "calories": 380,
+      "distance": 8500.0,
+      "distanceUnit": "METERS",
+      "steps": 0,
+      "startTime": "2024-01-15T07:30:00.000",
+      "duration": 2750000,
+      "heartRateZones": [
+        {
+          "name": "Out of Range",
+          "min": 0,
+          "max": 94,
+          "minutes": 0,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Fat Burn",
+          "min": 95,
+          "max": 134,
+          "minutes": 4,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Cardio",
+          "min": 135,
+          "max": 159,
+          "minutes": 3,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Peak",
+          "min": 160,
+          "max": 160,
+          "minutes": 0,
+          "caloriesOut": 0
+        }
+      ],
+      "originalDuration": 2750000,
+      "originalStartTime": "2024-01-15T07:30:00.000",
+      "logType": "auto",
+      "heartRate": {
+        "average": 126,
+        "max": 155
+      }
+    },
+    {
+      "activityName": "Walking 2024-01-15 18:30",
+      "activityTypeId": 90010,
+      "activeDuration": 1850000,
+      "calories": 120,
+      "distance": 2800.0,
+      "distanceUnit": "METERS",
+      "steps": 0,
+      "startTime": "2024-01-15T18:30:00.000",
+      "duration": 1850000,
+      "heartRateZones": [],
+      "originalDuration": 1850000,
+      "originalStartTime": "2024-01-15T18:30:00.000",
+      "logType": "auto",
+      "heartRate": null
+    },
+    {
+      "activityName": "Biking 2024-01-16 09:00",
+      "activityTypeId": 90013,
+      "activeDuration": 3600000,
+      "calories": 520,
+      "distance": 25000.0,
+      "distanceUnit": "METERS",
+      "steps": 0,
+      "startTime": "2024-01-16T09:00:00.000",
+      "duration": 3600000,
+      "heartRateZones": [
+        {
+          "name": "Out of Range",
+          "min": 0,
+          "max": 94,
+          "minutes": 2,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Fat Burn",
+          "min": 95,
+          "max": 134,
+          "minutes": 3,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Cardio",
+          "min": 135,
+          "max": 159,
+          "minutes": 7,
+          "caloriesOut": 0
+        },
+        {
+          "name": "Peak",
+          "min": 160,
+          "max": 160,
+          "minutes": 0,
+          "caloriesOut": 0
+        }
+      ],
+      "originalDuration": 3600000,
+      "originalStartTime": "2024-01-16T09:00:00.000",
+      "logType": "auto",
+      "heartRate": {
+        "average": 128,
+        "max": 155
+      }
+    }
+  ]
+}

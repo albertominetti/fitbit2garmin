@@ -17,6 +17,7 @@ After years using Fitbit for activity tracking, heart rate monitoring, sleep ana
 - [Installation](#installation)
 - [Usage](#usage)
 - [Importing into Garmin Connect](#importing-into-garmin-connect)
+- [Reverse Flow: Garmin → Fitbit](#reverse-flow-garmin--fitbit)
 - [Sample Data](#sample-data)
 - [File Format Specifications](#file-format-specifications)
 - [Limitations](#limitations)
@@ -556,9 +557,113 @@ Garmin Connect **does not** support importing sleep or daily step/calorie/distan
 
 ---
 
+## Reverse Flow: Garmin → Fitbit
+
+Moving from Garmin back to Fitbit? The `garmin2fitbit` companion tool converts Garmin data exports into Fitbit's native JSON format — the same structure used by Google Takeout.
+
+### What Can Be Imported Into Fitbit?
+
+Fitbit has **no official bulk import feature**. Unlike Garmin Connect (which accepts TCX and CSV), the only way to get historical data into Fitbit is through the **Fitbit Web API** or **third-party sync apps** that use it:
+
+| Garmin Data | Fitbit Format | Importable? |
+|---|---|---|
+| **Activities** (TCX) | `activities.json` + TCX passthrough | ⚠️ Via third-party apps (RunGap, HealthSync) or Fitbit API |
+| **Body composition** (CSV) | `weight.json` | ⚠️ Via Fitbit API |
+| **Sleep** (CSV) | `sleep.json` | ❌ No import path |
+| **Daily steps/calories/distance** (CSV) | `activities-{steps,calories,distance}.json` | ❌ No import path |
+
+### About `garmin2fitbit`
+
+The converter reads:
+- **TCX files** from a subdirectory `activities/` (standard Garmin TCX v2 format — the same files this project's `fitbit2garmin` generates)
+- **Body composition CSV** (`Date,Weight,BMI,BodyFat,...` — Garmin Connect export)
+- **Sleep CSV** (`Date,Sleep Start,Sleep End,Duration (min),...`)
+- **Daily summary CSV** (`Date,Steps,Calories,Distance,Floors,...`)
+
+And outputs Fitbit-style JSON files matching the Google Takeout structure:
+
+```
+fitbit_output/
+├── activities.json                ← Activities in Fitbit format
+├── weight.json                    ← Body composition entries
+├── sleep.json                     ← Sleep sessions
+├── activities-steps.json          ← Daily step counts
+├── activities-calories.json       ← Daily calories
+├── activities-distance.json       ← Daily distance
+└── activities/                    ← TCX passthrough (if --tcx)
+    ├── 20240115_073000_Running.tcx
+    ├── 20240115_183000_Walking.tcx
+    └── 20240116_090000_Cycling.tcx
+```
+
+### Usage
+
+```
+usage: python -m garmin2fitbit [-h] [-o OUTPUT_DIR] [--no-activities]
+                                [--tcx] [--no-weight] [--no-sleep]
+                                [--no-summary] [-v] [--version]
+                                input_dir
+
+Convert Garmin data export to Fitbit-compatible formats
+
+positional arguments:
+  input_dir             Directory with Garmin TCX files (in activities/)
+                        and CSV exports
+
+options:
+  -h, --help            show this help message and exit
+  -o, --output-dir OUTPUT_DIR
+                        Output directory (default: ./fitbit_output)
+  --no-activities       Skip Fitbit JSON activities output
+  --tcx                 Also generate TCX passthrough files (for Fitbit
+                        API upload)
+  --no-weight           Skip body composition JSON export
+  --no-sleep            Skip sleep JSON export
+  --no-summary          Skip daily summary JSON export
+  -v, --verbose         Verbose output
+  --version             show program's version number and exit
+```
+
+### Examples
+
+```bash
+# Basic conversion — all data to Fitbit JSON
+python -m garmin2fitbit ~/Downloads/Garmin/Export -o ./fitbit_data
+
+# Also generate TCX passthrough files (for third-party upload tools)
+python -m garmin2fitbit ~/Downloads/Garmin/Export -o ./fitbit_data --tcx
+
+# Activities + weight only
+python -m garmin2fitbit ~/Downloads/Garmin/Export -o ./fitbit_data \
+  --no-sleep --no-summary
+
+# TCX passthrough only (no Fitbit JSON at all)
+python -m garmin2fitbit ~/Downloads/Garmin/Export -o ./fitbit_data \
+  --no-weight --no-sleep --no-summary --tcx
+```
+
+### Setting Up Garmin Export
+
+1. Go to [Garmin Connect](https://connect.garmin.com/) → **Settings** (gear icon) → **Data Management**
+2. Click **Export Your Data** and wait for the email
+3. Download and extract the ZIP
+4. The converter expects:
+   - TCX files inside an `activities/` subdirectory under `input_dir`
+   - CSV files (body composition, sleep, daily summary) at the top level of `input_dir`
+
+Alternatively, just point it at the `fitbit2garmin` output directory — since that tool already generates valid Garmin TCX files:
+
+```bash
+# Round-trip: Fitbit → Garmin TCX → Fitbit JSON
+python -m fitbit2garmin ~/Takeout/Fitbit -o ./garmin_output
+python -m garmin2fitbit ./garmin_output -o ./back_to_fitbit --tcx
+```
+
+---
+
 ## Sample Data
 
-The `sample/` directory contains representative Fitbit export data and the corresponding converter output:
+The `sample/` directory contains representative Fitbit export data, the corresponding Garmin-format output, and Garmin export data for the reverse flow:
 
 ```
 sample/
@@ -566,7 +671,7 @@ sample/
 │   ├── Global Export Data/
 │   │   ├── heart_rate-2024-01-15.json    # Intraday HR (16 samples)
 │   │   ├── sleep-2024-01-15.json          # Sleep with stages + levels data
-│   │   ├── sleep-2024-01-16.json          # Second night (summary only, no levels data)
+│   │   ├── sleep-2024-01-16.json          # Second night (summary only)
 │   │   ├── activities-2024-01-15.json     # 2 activities: Run + Walk
 │   │   ├── activities-2024-01-16.json     # 1 activity: Cycling
 │   │   ├── weight-2024-01-15.json         # Body weight x 3 days
@@ -581,23 +686,41 @@ sample/
 │   └── Body/
 │       └── weight-2024-01-20.json         # Weight with timestamp
 │
-    └── output/
-        ├── activities/
-        │   ├── 20240115_073000_Running.tcx     # Morning Run with HR trackpoints
-        │   ├── 20240115_183000_Walking.tcx     # Evening Walk with HR trackpoints
-        │   └── 20240116_090000_Cycling.tcx     # Cycling with 12 HR trackpoints
-        ├── body_composition.csv                # 4 weight entries
-        ├── sleep.csv                           # 2 sleep sessions
-        └── daily_summary.csv                   # 2 days of summaries
+├── output/
+│   ├── activities/
+│   │   ├── 20240115_073000_Running.tcx     # Morning Run with HR trackpoints
+│   │   ├── 20240115_183000_Walking.tcx     # Evening Walk with HR trackpoints
+│   │   └── 20240116_090000_Cycling.tcx     # Cycling with 12 HR trackpoints
+│   ├── body_composition.csv                # 4 weight entries
+│   ├── sleep.csv                           # 2 sleep sessions
+│   └── daily_summary.csv                   # 2 days of summaries
+│
+├── garmin_input/                           # Garmin → Fitbit sample data
+│   ├── activities/                         # Same TCX files as output/activities/
+│   ├── body_composition.csv                # 4 body entries
+│   ├── sleep.csv                           # 2 sleep sessions
+│   └── daily_summary.csv                   # 2 daily summaries (with floors, active mins)
+│
+└── garmin_output/                          # garmin2fitbit generated output
+    ├── activities.json                     # Fitbit-style activity JSON
+    ├── weight.json                         # Body composition entries
+    ├── sleep.json                          # Sleep sessions
+    ├── activities-steps.json               # Daily step counts
+    ├── activities-calories.json            # Daily calories
+    └── activities-distance.json            # Daily distance
 ```
 
-To regenerate the sample output:
+To regenerate sample outputs:
 
 ```bash
-python -m fitbit2garmin sample/input -o sample/output --hr-only
+# Fitbit → Garmin
+python -m fitbit2garmin sample/input -o sample/output
+
+# Garmin → Fitbit
+python -m garmin2fitbit sample/garmin_input -o sample/garmin_output
 ```
 
-### What the sample demonstrates
+### What the samples demonstrate
 
 | Scenario | Sample file | What it tests |
 |---|---|---|
@@ -610,6 +733,10 @@ python -m fitbit2garmin sample/input -o sample/output --hr-only
 | **Weight from Global Export** | `weight-2024-01-15.json` | Date-only timestamps, multiple entries |
 | **Weight from Body folder** | `Body/weight-2024-01-20.json` | Datetime timestamps in Body/ subfolder |
 | **Steps + calories + distance** | `*-2024-01-{15,16}.json` | Daily summary aggregation |
+| **TCX round-trip** | `garmin_input/activities/*.tcx` | Garmin TCX → Fitbit JSON via garmin2fitbit |
+| **Body comp CSV** | `garmin_input/body_composition.csv` | Garmin CSV → Fitbit weight JSON |
+| **Sleep CSV** | `garmin_input/sleep.csv` | Garmin CSV → Fitbit sleep JSON |
+| **Daily summary CSV** | `garmin_input/daily_summary.csv` | Garmin CSV → Fitbit daily field JSONs |
 
 ---
 
@@ -710,12 +837,21 @@ fitbit2garmin/
 ├── setup.py
 ├── sample/
 │   ├── input/            ← Sample Fitbit export (use as reference)
-│   └── output/           ← Generated Garmin-compatible files
-└── fitbit2garmin/
-    ├── __init__.py       ← Package metadata
-    ├── __main__.py       ← `python -m` entry point
-    ├── models.py         ← Data classes (Activity, SleepSession, etc.)
-    ├── reader.py         ← Fitbit JSON parser (handles all date formats)
-    ├── writer.py         ← TCX/CSV output generator
-    └── converter.py      ← CLI + conversion orchestration + HR matching
+│   ├── output/           ← Generated Garmin-compatible files
+│   ├── garmin_input/     ← Sample Garmin export (for reverse flow)
+│   └── garmin_output/    ← Generated Fitbit-format files
+├── fitbit2garmin/        ← Fitbit → Garmin converter
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── models.py
+│   ├── reader.py
+│   ├── writer.py
+│   └── converter.py
+└── garmin2fitbit/        ← Garmin → Fitbit converter
+    ├── __init__.py
+    ├── __main__.py
+    ├── models.py
+    ├── reader.py
+    ├── writer.py
+    └── converter.py
 ```
