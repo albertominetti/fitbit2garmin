@@ -268,28 +268,221 @@ Since Fitbit has no native bulk import, here are the practical options:
 | **Fitbit Web API** | Direct API access. Write scripts to create activities, log body measurements, etc. | Free | Activities, body composition |
 | **Manual entry** | Fitbit app allows logging individual activities, weight, and sleep manually | Free | Everything (but tedious) |
 
-**Using the Fitbit Web API directly:**
+### Getting a Fitbit API Token
 
-```python
-import requests
+Fitbit uses OAuth 2.0. You need a **personal app** to get a token:
 
-# Create an activity log via Fitbit API
-headers = {"Authorization": "Bearer YOUR_ACCESS_TOKEN"}
-payload = {
-    "activityId": 90009,  # Running
+1. Go to [dev.fitbit.com](https://dev.fitbit.com/) → **Register an App**
+2. Set **OAuth 2.0 Application Type** to **Personal**
+3. Set **Redirect URL** to `https://localhost` (or anything valid)
+4. After registering, note your **Client ID** and **Client Secret**
+
+Then get a token with curl (requires a browser step):
+
+```bash
+# 1. Open this URL in your browser, authorize, then copy the code from the redirect
+open "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=https://localhost&scope=activity+nutrition+heartrate+location+nutrition+profile+settings+sleep+social+weight&expires_in=31536000"
+
+# 2. Exchange the code for an access token
+curl -X POST https://api.fitbit.com/oauth2/token \
+  -H "Authorization: Basic $(echo -n 'YOUR_CLIENT_ID:YOUR_CLIENT_SECRET' | base64)" \
+  -d "grant_type=authorization_code" \
+  -d "code=CODE_FROM_STEP_1" \
+  -d "redirect_uri=https://localhost"
+
+# 3. Use the returned access_token in the examples below
+TOKEN="your_access_token_here"
+```
+
+> Personal apps get tokens valid for 1 year. Save your `refresh_token` to renew it.
+
+### Upload Activities (curl)
+
+The `activities.json` output from `garmin2fitbit` is an array. Upload each entry via the Fitbit API:
+
+```bash
+TOKEN="your_access_token_here"
+
+# Upload one activity at a time
+curl -X POST "https://api.fitbit.com/1/user/-/activities.json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "activityId": 90009,
     "startTime": "2024-01-15T07:30:00",
     "durationMillis": 2750000,
     "distance": 8500,
     "distanceUnit": "METERS",
-    "manualCalories": 380,
-}
-r = requests.post(
-    "https://api.fitbit.com/1/user/-/activities.json",
-    headers=headers, json=payload
-)
+    "manualCalories": 380
+  }'
 ```
 
-This converter's JSON output is structured to be easily fed into API calls like this.
+Batch script to upload all activities from `activities.json`:
+
+```bash
+TOKEN="your_access_token_here"
+
+cat fitbit_output/activities.json | jq -c '.activities[]' | while read -r act; do
+  activityId=$(echo "$act" | jq '.activityTypeId')
+  startTime=$(echo "$act" | jq -r '.startTime')
+  durationMillis=$(echo "$act" | jq '.duration')
+  distance=$(echo "$act" | jq '.distance')
+  calories=$(echo "$act" | jq '.calories')
+  name=$(echo "$act" | jq -r '.activityName')
+
+  echo "Uploading: $name"
+
+  curl -s -X POST "https://api.fitbit.com/1/user/-/activities.json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d "activityId=$activityId" \
+    -d "startTime=$startTime" \
+    -d "durationMillis=$durationMillis" \
+    -d "distance=$distance" \
+    -d "distanceUnit=METERS" \
+    -d "manualCalories=$calories"
+
+  # Rate limit: 150 requests per hour
+  sleep 5
+done
+```
+
+### Upload Body Composition (curl)
+
+```bash
+TOKEN="your_access_token_here"
+
+# Upload weight log
+curl -X POST "https://api.fitbit.com/1/user/-/body/log/weight.json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "weight=75.5" \
+  -d "date=2024-01-15" \
+  -d "time=08:00"
+
+# Upload body fat percentage
+curl -X POST "https://api.fitbit.com/1/user/-/body/log/fat.json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "fat=15.8" \
+  -d "date=2024-01-15" \
+  -d "time=08:00"
+```
+
+Batch script from `weight.json`:
+
+```bash
+TOKEN="your_access_token_here"
+
+cat fitbit_output/weight.json | jq -c '.[]' | while read -r entry; do
+  date=$(echo "$entry" | jq -r '.dateTime')
+  weight=$(echo "$entry" | jq -r '.value.weight')
+  fat=$(echo "$entry" | jq -r '.value.fat // empty')
+
+  echo "Uploading weight for $date: ${weight}kg"
+
+  curl -s -X POST "https://api.fitbit.com/1/user/-/body/log/weight.json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d "weight=$weight" \
+    -d "date=$date" \
+    -d "time=08:00"
+
+  if [ -n "$fat" ]; then
+    curl -s -X POST "https://api.fitbit.com/1/user/-/body/log/fat.json" \
+      -H "Authorization: Bearer $TOKEN" \
+      -d "fat=$fat" \
+      -d "date=$date" \
+      -d "time=08:00"
+  fi
+
+  sleep 3
+done
+```
+
+### Full Python Upload Script
+
+Save as `upload_to_fitbit.py` alongside your `fitbit_output/` directory:
+
+```python
+#!/usr/bin/env python3
+"""Upload garmin2fitbit output to Fitbit via the Web API."""
+
+import json
+import os
+import time
+import requests
+
+TOKEN = "your_access_token_here"
+HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+OUTPUT_DIR = "fitbit_output"
+
+
+def upload_activities():
+    path = os.path.join(OUTPUT_DIR, "activities.json")
+    if not os.path.exists(path):
+        return
+    with open(path) as f:
+        data = json.load(f)
+    for act in data.get("activities", []):
+        payload = {
+            "activityId": act["activityTypeId"],
+            "startTime": act["startTime"],
+            "durationMillis": act["duration"],
+            "distance": act["distance"],
+            "distanceUnit": "METERS",
+            "manualCalories": act["calories"],
+        }
+        print(f"  → {act['activityName']} ...", end=" ")
+        r = requests.post(
+            "https://api.fitbit.com/1/user/-/activities.json",
+            headers=HEADERS, data=payload,
+        )
+        print("OK" if r.ok else f"FAIL ({r.status_code})")
+        time.sleep(5)
+
+
+def upload_weight():
+    path = os.path.join(OUTPUT_DIR, "weight.json")
+    if not os.path.exists(path):
+        return
+    with open(path) as f:
+        entries = json.load(f)
+    for entry in entries:
+        date = entry["dateTime"]
+        val = entry["value"]
+        print(f"  → Weight {date} ({val['weight']} kg) ...", end=" ")
+        r = requests.post(
+            "https://api.fitbit.com/1/user/-/body/log/weight.json",
+            headers=HEADERS,
+            data={"weight": val["weight"], "date": date, "time": "08:00"},
+        )
+        print("OK" if r.ok else f"FAIL ({r.status_code})")
+
+        if val.get("fat"):
+            print(f"  → Body fat {date} ({val['fat']}%) ...", end=" ")
+            r = requests.post(
+                "https://api.fitbit.com/1/user/-/body/log/fat.json",
+                headers=HEADERS,
+                data={"fat": val["fat"], "date": date, "time": "08:00"},
+            )
+            print("OK" if r.ok else f"FAIL ({r.status_code})")
+
+        time.sleep(3)
+
+
+if __name__ == "__main__":
+    print("Uploading activities...")
+    upload_activities()
+    print("Uploading body composition...")
+    upload_weight()
+    print("Done.")
+```
+
+### Rate Limits
+
+| Limit | Value |
+|---|---|
+| Requests per hour (per user) | 150 |
+| Requests per day (per user) | 30,000 |
+
+The batch scripts above include `sleep` calls to stay within limits. For large exports, add longer delays or split across multiple days.
 
 ---
 
