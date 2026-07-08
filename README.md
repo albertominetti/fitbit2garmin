@@ -304,26 +304,26 @@ Date,Steps,Calories,Distance (m)
 
 ## Feature Comparison: Fitbit vs Garmin
 
-| Feature | Fitbit | Garmin | Conversion |
+| Feature | Fitbit | Garmin | Import |
 |---|---|---|---|
-| **Running/Walking/Cycling** | activityName + typeId + zones | Sport type + HR zones | → TCX activity |
-| **Heart rate (intraday)** | `{bpm, confidence}` per sample | Per-trackpoint in TCX/FIT | → TCX trackpoints |
-| **Heart rate (daily)** | Resting HR + zone minutes | Resting HR + intensity mins | → In TCX lap summary |
-| **Sleep stages** | REM / Deep / Light / Awake | REM / Deep / Light / Awake | → CSV only (no Garmin import) |
-| **Sleep score** | Efficiency % | Sleep score (1-100) | Not mapped |
-| **Weight & BMI** | Manual or scale logs | Manual or scale logs | → CSV import |
-| **Body fat %** | With Aria scale | With Index scale | → CSV import |
-| **Steps** | Daily total | Daily total | → CSV only |
-| **Calories** | Active + BMR combined | Active + Resting split | → CSV only |
-| **Distance** | Daily total | Daily total (GPS-based) | → CSV only |
-| **GPS tracks** | Per workout | Per activity .FIT/.GPX | Partial (see limitations) |
-| **VO2 Max** | Cardio Fitness Score | VO2 Max estimate | Not available |
-| **Floors climbed** | Barometric | Barometric (most devices) | Not converted |
-| **Food / Nutrition** | Barcode scanning | Manual (Connect) | Not converted |
-| **Water intake** | Manual log | Manual log | Not converted |
-| **Menstrual health** | Cycle tracking | Cycle tracking | Not converted |
-| **SpO2 / Blood oxygen** | Nightly average | Pulse Ox | Not converted |
-| **Stress / HRV** | Stress score | Stress + Body Battery | Not converted |
+| **Running/Walking/Cycling** | activityName + typeId + zones | Sport type + HR zones | ✅ TCX |
+| **Heart rate (intraday)** | `{bpm, confidence}` per sample | Per-trackpoint in TCX/FIT | ✅ TCX |
+| **Heart rate (daily)** | Resting HR + zone minutes | Resting HR + intensity mins | ⚠️ TCX lap only |
+| **Sleep stages** | REM / Deep / Light / Awake | REM / Deep / Light / Awake | ❌ |
+| **Sleep score** | Efficiency % | Sleep score (1-100) | ❌ |
+| **Weight & BMI** | Manual or scale logs | Manual or scale logs | ✅ CSV |
+| **Body fat %** | With Aria scale | With Index scale | ✅ CSV |
+| **Steps** | Daily total | Daily total | ❌ |
+| **Calories** | Active + BMR combined | Active + Resting split | ❌ |
+| **Distance** | Daily total | Daily total (GPS-based) | ❌ |
+| **GPS tracks** | Per workout | Per activity .FIT/.GPX | ⚠️ partial |
+| **VO2 Max** | Cardio Fitness Score | VO2 Max estimate | ❌ |
+| **Floors climbed** | Barometric | Barometric (most devices) | ❌ |
+| **Food / Nutrition** | Barcode scanning | Manual (Connect) | ❌ |
+| **Water intake** | Manual log | Manual log | ❌ |
+| **Menstrual health** | Cycle tracking | Cycle tracking | ❌ |
+| **SpO2 / Blood oxygen** | Nightly average | Pulse Ox | ❌ |
+| **Stress / HRV** | Stress score | Stress + Body Battery | ❌ |
 
 ---
 
