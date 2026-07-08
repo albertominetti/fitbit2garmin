@@ -24,17 +24,19 @@ The `sample/` directory contains representative data for both converters:
 
 ```
 sample/
-├── input/                          ← Fitbit export (Google Takeout JSON)
-├── output/                         ← fitbit2garmin output
-├── garmin_input/                   ← Garmin export (TCX + CSV)
-└── garmin_output/                  ← garmin2fitbit output
+├── fitbit2garmin/
+│   ├── input/                      ← Fitbit export (Google Takeout JSON)
+│   └── output/                     ← fitbit2garmin output
+└── garmin2fitbit/
+    ├── input/                      ← Garmin export (TCX + CSV)
+    └── output/                     ← garmin2fitbit output
 ```
 
 Regenerate all sample output:
 
 ```bash
-python -m fitbit2garmin sample/input -o sample/output
-python -m garmin2fitbit sample/garmin_input -o sample/garmin_output
+python -m fitbit2garmin sample/fitbit2garmin/input -o sample/fitbit2garmin/output
+python -m garmin2fitbit sample/garmin2fitbit/input -o sample/garmin2fitbit/output
 ```
 
 ---
@@ -45,10 +47,12 @@ python -m garmin2fitbit sample/garmin_input -o sample/garmin_output
 ├── README.md                       ← This file
 ├── setup.py
 ├── sample/
-│   ├── input/                      ← Sample Fitbit Takeout export
-│   ├── output/                     ← Generated Garmin-compatible files
-│   ├── garmin_input/               ← Sample Garmin export
-│   └── garmin_output/              ← Generated Fitbit-format files
+│   ├── fitbit2garmin/
+│   │   ├── input/                  ← Sample Fitbit Takeout export
+│   │   └── output/                 ← Generated Garmin-compatible files
+│   └── garmin2fitbit/
+│       ├── input/                  ← Sample Garmin export
+│       └── output/                 ← Generated Fitbit-format files
 ├── fitbit2garmin/                  ← Fitbit → Garmin
 │   ├── README.md
 │   ├── __init__.py
