@@ -27,7 +27,7 @@ Fitbit has **no official bulk import feature**. Unlike Garmin Connect (which acc
 | **Heart rate** (per-trackpoint from TCX) | Embedded in `activities.json` + zones | ❌ | No API endpoint to upload HR data; only third-party tools that accept TCX can carry it |
 | **Weight & BMI** (CSV) | `weight.json` | ⚠️ Possible | Fitbit API [`POST /1/user/-/body/log/weight.json`](https://dev.fitbit.com/build/reference/web-api/body/log-weight/) |
 | **Body fat %** (CSV) | `weight.json` (with `fat` field) | ⚠️ Possible | Fitbit API [`POST /1/user/-/body/log/fat.json`](https://dev.fitbit.com/build/reference/web-api/body/log-fat/) |
-| **Sleep** (CSV) | `sleep.json` | ⚠️ Possible | Fitbit API [`POST /1.2/user/-/sleep.json`](https://dev.fitbit.com/build/reference/web-api/sleep/create-sleep-log/) — classic sleep only (no REM/deep/light stages) |
+| **Sleep** (CSV) | `sleep.json` | ⚠️ Possible | Fitbit API [`POST /1.2/user/-/sleep.json`](https://dev.fitbit.com/build/reference/web-api/sleep/create-sleep-log/) - classic sleep only (no REM/deep/light stages) |
 | **Steps** (daily CSV) | `activities-steps.json` | ❌ | No import path (Fitbit doesn't expose step logging in the API) |
 | **Calories** (daily CSV) | `activities-calories.json` | ❌ | No import path |
 | **Distance** (daily CSV) | `activities-distance.json` | ❌ | No import path |
@@ -194,7 +194,7 @@ Identical to the original Garmin TCX files, regenerated for direct use with thir
 ## Installation
 
 ```bash
-# No installation required — run directly:
+# No installation required - run directly:
 python -m garmin2fitbit /path/to/garmin/export -o ./fitbit_output
 
 # Or install with pip for use as a command:
@@ -237,7 +237,7 @@ options:
 ### Examples
 
 ```bash
-# Basic conversion — all data to Fitbit JSON
+# Basic conversion - all data to Fitbit JSON
 python -m garmin2fitbit ~/Downloads/Garmin/Export -o ./fitbit_data
 
 # Also generate TCX passthrough files (for third-party upload tools)
@@ -400,7 +400,7 @@ done
 
 ### Upload Sleep (curl)
 
-The Fitbit API can create sleep logs via `POST /1.2/user/-/sleep.json`. Note that this creates **classic sleep** (start time + duration) — no REM/deep/light stage data is preserved.
+The Fitbit API can create sleep logs via `POST /1.2/user/-/sleep.json`. Note that this creates **classic sleep** (start time + duration) - no REM/deep/light stage data is preserved.
 
 ```bash
 TOKEN="your_access_token_here"
@@ -588,7 +588,7 @@ python -m garmin2fitbit ./garmin_output -o ./fitbit_formatted --tcx
 | Limitation | Details |
 |---|---|
 | **No bulk import into Fitbit** | Fitbit does not provide a CSV/TCX upload feature. The JSON output is for archival or API consumption |
-| **Sleep: classic only** | The API accepts sleep logs via `POST /1.2/user/-/sleep.json`, but only classic sleep (start time + duration) — no REM/deep/light stage data |
+| **Sleep: classic only** | The API accepts sleep logs via `POST /1.2/user/-/sleep.json`, but only classic sleep (start time + duration) - no REM/deep/light stage data |
 | **Daily steps/calories cannot be imported** | Fitbit's API does not support logging daily totals for steps, calories, or distance |
 | **Heart rate cannot be imported standalone** | No API endpoint exists to upload HR data; it can only be carried by TCX via third-party tools |
 | **Menstrual health cannot be imported** | Fitbit Web API has no write endpoint for cycle or menstrual health data |

@@ -2,7 +2,7 @@
 
 Convert your Fitbit data export to Garmin-compatible formats for import into Garmin Connect.
 
-After years using Fitbit for activity tracking, heart rate monitoring, sleep analysis, and weight logging, migrating to Garmin means leaving your history behind — unless you bring it with you. This tool translates your Fitbit Google Takeout export into files that Garmin Connect can actually import.
+After years using Fitbit for activity tracking, heart rate monitoring, sleep analysis, and weight logging, migrating to Garmin means leaving your history behind - unless you bring it with you. This tool translates your Fitbit Google Takeout export into files that Garmin Connect can actually import.
 
 ---
 
@@ -31,7 +31,7 @@ Since Google's acquisition of Fitbit, all data exports go through **Google Takeo
 
 1. Go to [Google Takeout](https://takeout.google.com/)
 2. Click **Deselect all**, then search for and select **Fitbit**
-3. Choose **JSON** format (recommended — CSV also works for some types)
+3. Choose **JSON** format (recommended - CSV also works for some types)
 4. Set delivery to email, frequency to single export, and file size to 2 GB
 5. Click **Create export**
 6. Wait for the email (minutes to hours depending on data volume)
@@ -135,7 +135,7 @@ Date formats accepted: `MM/dd/yy HH:mm:ss`, `YYYY-MM-dd HH:mm:ss`, `YYYY-MM-ddTH
 }
 ```
 
-Both `"type": "stages"` (with REM/deep/light) and `"type": "classic"` (restless/asleep/awake) are supported. The converter correctly handles the summary object where `"asleep"` is the total and `"deep"`, `"light"`, `"rem"` are breakdowns — no double-counting.
+Both `"type": "stages"` (with REM/deep/light) and `"type": "classic"` (restless/asleep/awake) are supported. The converter correctly handles the summary object where `"asleep"` is the total and `"deep"`, `"light"`, `"rem"` are breakdowns - no double-counting.
 
 **Classic sleep example (older devices):**
 ```json
@@ -204,7 +204,7 @@ Both `"type": "stages"` (with REM/deep/light) and `"type": "classic"` (restless/
 
 ### Activities: Detailed Workout (`Physical Activity/`)
 
-The same format as above but stored in a separate folder by Google Takeout. These often contain more detail including GPS data (though GPS trackpoints are not yet extracted — see limitations).
+The same format as above but stored in a separate folder by Google Takeout. These often contain more detail including GPS data (though GPS trackpoints are not yet extracted - see limitations).
 
 ### Steps, Calories, Distance (`steps-*.json`, `calories-*.json`, `distance-*.json`)
 
@@ -461,7 +461,7 @@ For each day with HR samples but no activity (--hr-only):
 ## Installation
 
 ```bash
-# No installation required — run directly:
+# No installation required - run directly:
 python -m fitbit2garmin /path/to/Takeout/Fitbit -o ./output
 
 # Or install with pip for use as a command:
@@ -469,7 +469,7 @@ pip install -e /path/to/fitbit2garmin
 fitbit2garmin /path/to/Takeout/Fitbit -o ./output
 ```
 
-Requires Python 3.10+. No external dependencies — uses only the standard library.
+Requires Python 3.10+. No external dependencies - uses only the standard library.
 
 ---
 
@@ -622,7 +622,7 @@ Yes. Google Takeout still labels the data category as "Fitbit" even after the re
 
 Garmin Connect Mobile does not support TCX import. Use the web version at connect.garmin.com on a desktop browser.
 
-### My activity durations look wrong — what's activeDuration vs originalDuration?
+### My activity durations look wrong - what's activeDuration vs originalDuration?
 
 Fitbit records two durations:
 - `activeDuration`: time spent actually moving (excluding pauses, rests)

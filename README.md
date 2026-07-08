@@ -2,7 +2,7 @@
 
 Bidirectional converter between Fitbit and Garmin data formats.
 
-After years using Fitbit for activity tracking, heart rate monitoring, sleep analysis, and weight logging, migrating to Garmin means leaving your history behind — unless you bring it with you. This project provides tools to translate your health data across platforms.
+After years using Fitbit for activity tracking, heart rate monitoring, sleep analysis, and weight logging, migrating to Garmin means leaving your history behind - unless you bring it with you. This project provides tools to translate your health data across platforms.
 
 ---
 
@@ -14,7 +14,7 @@ Convert your Fitbit Google Takeout export into TCX and CSV files that Garmin Con
 
 ### [`garmin2fitbit` →](garmin2fitbit/README.md)
 
-Convert Garmin data exports (TCX activities, CSV body/sleep/summaries) into Fitbit's native JSON format — the same structure used by Google Takeout. Useful for archiving or feeding into third-party tools that use the Fitbit Web API.
+Convert Garmin data exports (TCX activities, CSV body/sleep/summaries) into Fitbit's native JSON format - the same structure used by Google Takeout. Useful for archiving or feeding into third-party tools that use the Fitbit Web API.
 
 ---
 
@@ -79,10 +79,10 @@ If you want all your data (Fitbit history + Garmin daily data) in one place, the
 
 | Tool | Platform | Price | What it syncs to Fitbit | What it syncs to Garmin |
 |---|---|---|---|---|
-| **Health Sync** | Android, iOS | ~$4–6 lifetime (one-time) | Steps, HR, sleep, weight, activities via Google Health APIs | Steps, HR, sleep, weight, activities |
+| **Health Sync** | Android, iOS | ~$4-6 lifetime (one-time) | Steps, HR, sleep, weight, activities via Google Health APIs | Steps, HR, sleep, weight, activities |
 | **RunGap** | iOS | $4.99/quarter or $14.99/year (Swag Bag) | Activities (workouts) to Fitbit | Activities to Garmin Connect |
-| **myFitnessSync** | iOS | $9.99/month or $59.99/lifetime | Steps, weight, body fat, sleep, water (5 fields) | — |
-| **Strava** | Web, iOS, Android | Free tier (Summit $5/mo optional) | — | Auto-sync from Garmin; manual upload from Fitbit |
+| **myFitnessSync** | iOS | $9.99/month or $59.99/lifetime | Steps, weight, body fat, sleep, water (5 fields) | - |
+| **Strava** | Web, iOS, Android | Free tier (Summit $5/mo optional) | - | Auto-sync from Garmin; manual upload from Fitbit |
 
 **Recommendation**: On iOS, **RunGap** + Apple Health gives you a single source of truth. On Android, **Health Sync** with Google Health (Fitbit) serves the same role.
 
