@@ -1,0 +1,43 @@
+{
+  "sleep": [
+    {
+      "dateOfSleep": "2024-01-15",
+      "duration": 29400000,
+      "efficiency": 93,
+      "startTime": "2024-01-14T23:15:00.000",
+      "endTime": "2024-01-15T07:20:00.000",
+      "minutesAfterWakeup": 5,
+      "minutesAsleep": 445,
+      "minutesAwake": 25,
+      "minutesToFallAsleep": 12,
+      "timeInBed": 485,
+      "isMainSleep": true,
+      "type": "stages",
+      "levels": {
+        "data": [
+          {"dateTime": "2024-01-14T23:15:00.000", "level": "light", "seconds": 2400},
+          {"dateTime": "2024-01-14T23:55:00.000", "level": "deep", "seconds": 3300},
+          {"dateTime": "2024-01-15T00:50:00.000", "level": "light", "seconds": 2700},
+          {"dateTime": "2024-01-15T01:35:00.000", "level": "rem", "seconds": 1800},
+          {"dateTime": "2024-01-15T02:05:00.000", "level": "light", "seconds": 3600},
+          {"dateTime": "2024-01-15T03:05:00.000", "level": "deep", "seconds": 2400},
+          {"dateTime": "2024-01-15T03:45:00.000", "level": "light", "seconds": 1800},
+          {"dateTime": "2024-01-15T04:15:00.000", "level": "rem", "seconds": 2400},
+          {"dateTime": "2024-01-15T04:55:00.000", "level": "light", "seconds": 3600},
+          {"dateTime": "2024-01-15T05:55:00.000", "level": "rem", "seconds": 1200},
+          {"dateTime": "2024-01-15T06:15:00.000", "level": "wake", "seconds": 300},
+          {"dateTime": "2024-01-15T06:20:00.000", "level": "light", "seconds": 3000},
+          {"dateTime": "2024-01-15T07:10:00.000", "level": "wake", "seconds": 600}
+        ],
+        "shortData": [],
+        "summary": {
+          "deep": {"count": 2, "minutes": 95, "thirtyDayAvgMinutes": 88},
+          "light": {"count": 5, "minutes": 245, "thirtyDayAvgMinutes": 250},
+          "rem": {"count": 3, "minutes": 90, "thirtyDayAvgMinutes": 82},
+          "wake": {"count": 3, "minutes": 25, "thirtyDayAvgMinutes": 20},
+          "asleep": {"count": 1, "minutes": 430, "thirtyDayAvgMinutes": 420}
+        }
+      }
+    }
+  ]
+}

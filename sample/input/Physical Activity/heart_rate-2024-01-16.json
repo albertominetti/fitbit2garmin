@@ -1,0 +1,15 @@
+[
+  {"dateTime": "2024-01-16 08:55:00", "value": {"bpm": 72, "confidence": 3}},
+  {"dateTime": "2024-01-16 09:00:00", "value": {"bpm": 85, "confidence": 3}},
+  {"dateTime": "2024-01-16 09:05:00", "value": {"bpm": 108, "confidence": 3}},
+  {"dateTime": "2024-01-16 09:10:00", "value": {"bpm": 125, "confidence": 3}},
+  {"dateTime": "2024-01-16 09:15:00", "value": {"bpm": 138, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:20:00", "value": {"bpm": 145, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:25:00", "value": {"bpm": 152, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:30:00", "value": {"bpm": 148, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:35:00", "value": {"bpm": 155, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:40:00", "value": {"bpm": 142, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:45:00", "value": {"bpm": 135, "confidence": 2}},
+  {"dateTime": "2024-01-16 09:50:00", "value": {"bpm": 110, "confidence": 3}},
+  {"dateTime": "2024-01-16 10:00:00", "value": {"bpm": 92, "confidence": 3}}
+]

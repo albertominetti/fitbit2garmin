@@ -1,0 +1,24 @@
+{
+  "activities": [
+    {
+      "activityName": "Cycling",
+      "activityTypeId": 90013,
+      "activeDuration": 3600000,
+      "originalDuration": 3600000,
+      "calories": 520,
+      "steps": 0,
+      "distance": 25000,
+      "distanceUnit": "METERS",
+      "startTime": "2024-01-16T09:00:00.000",
+      "heartRateZones": [
+        {"name": "Out of Range", "min": 30, "max": 90, "minutes": 5},
+        {"name": "Fat Burn", "min": 91, "max": 140, "minutes": 30},
+        {"name": "Cardio", "min": 141, "max": 170, "minutes": 20},
+        {"name": "Peak", "min": 171, "max": 220, "minutes": 5}
+      ]
+    }
+  ],
+  "activitiesGoals": [
+    {"activeDuration": 60, "caloriesOut": 500, "distance": 20, "steps": 10000}
+  ]
+}

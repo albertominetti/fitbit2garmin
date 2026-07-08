@@ -1,0 +1,18 @@
+[
+  {"dateTime": "01/15/24 06:30:00", "value": {"bpm": 62, "confidence": 3}},
+  {"dateTime": "01/15/24 07:00:00", "value": {"bpm": 68, "confidence": 3}},
+  {"dateTime": "01/15/24 07:05:00", "value": {"bpm": 72, "confidence": 3}},
+  {"dateTime": "01/15/24 07:30:00", "value": {"bpm": 95, "confidence": 3}},
+  {"dateTime": "01/15/24 07:35:00", "value": {"bpm": 112, "confidence": 3}},
+  {"dateTime": "01/15/24 07:40:00", "value": {"bpm": 128, "confidence": 3}},
+  {"dateTime": "01/15/24 07:45:00", "value": {"bpm": 142, "confidence": 2}},
+  {"dateTime": "01/15/24 07:50:00", "value": {"bpm": 155, "confidence": 2}},
+  {"dateTime": "01/15/24 07:55:00", "value": {"bpm": 148, "confidence": 2}},
+  {"dateTime": "01/15/24 08:00:00", "value": {"bpm": 102, "confidence": 3}},
+  {"dateTime": "01/15/24 08:30:00", "value": {"bpm": 88, "confidence": 3}},
+  {"dateTime": "01/15/24 09:00:00", "value": {"bpm": 75, "confidence": 3}},
+  {"dateTime": "01/15/24 12:00:00", "value": {"bpm": 78, "confidence": 3}},
+  {"dateTime": "01/15/24 15:00:00", "value": {"bpm": 72, "confidence": 3}},
+  {"dateTime": "01/15/24 18:00:00", "value": {"bpm": 80, "confidence": 3}},
+  {"dateTime": "01/15/24 22:00:00", "value": {"bpm": 65, "confidence": 3}}
+]

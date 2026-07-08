@@ -1,0 +1,39 @@
+{
+  "activities": [
+    {
+      "activityName": "Morning Run",
+      "activityTypeId": 90009,
+      "activeDuration": 2700000,
+      "originalDuration": 2750000,
+      "calories": 380,
+      "steps": 7200,
+      "distance": 8500,
+      "distanceUnit": "METERS",
+      "startTime": "2024-01-15T07:30:00.000",
+      "heartRateZones": [
+        {"name": "Out of Range", "min": 30, "max": 90, "minutes": 8},
+        {"name": "Fat Burn", "min": 91, "max": 140, "minutes": 22},
+        {"name": "Cardio", "min": 141, "max": 170, "minutes": 14},
+        {"name": "Peak", "min": 171, "max": 220, "minutes": 1}
+      ]
+    },
+    {
+      "activityName": "Evening Walk",
+      "activityTypeId": 90010,
+      "activeDuration": 1800000,
+      "originalDuration": 1850000,
+      "calories": 120,
+      "steps": 3500,
+      "distance": 2800,
+      "distanceUnit": "METERS",
+      "startTime": "2024-01-15T18:30:00.000",
+      "heartRateZones": [
+        {"name": "Out of Range", "min": 30, "max": 90, "minutes": 25},
+        {"name": "Fat Burn", "min": 91, "max": 140, "minutes": 5}
+      ]
+    }
+  ],
+  "activitiesGoals": [
+    {"activeDuration": 30, "caloriesOut": 300, "distance": 8, "steps": 10000}
+  ]
+}
