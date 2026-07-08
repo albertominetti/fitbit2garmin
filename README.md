@@ -138,6 +138,45 @@ Date formats accepted: `MM/dd/yy HH:mm:ss`, `YYYY-MM-dd HH:mm:ss`, `YYYY-MM-ddTH
 
 Both `"type": "stages"` (with REM/deep/light) and `"type": "classic"` (restless/asleep/awake) are supported. The converter correctly handles the summary object where `"asleep"` is the total and `"deep"`, `"light"`, `"rem"` are breakdowns — no double-counting.
 
+**Classic sleep example (older devices):**
+```json
+{
+  "sleep": [
+    {
+      "dateOfSleep": "2024-06-10",
+      "duration": 28200000,
+      "efficiency": 87,
+      "startTime": "2024-06-09T23:45:00.000",
+      "endTime": "2024-06-10T07:30:00.000",
+      "minutesAsleep": 430,
+      "minutesAwake": 40,
+      "minutesToFallAsleep": 18,
+      "timeInBed": 470,
+      "isMainSleep": true,
+      "type": "classic",
+      "levels": {
+        "data": [
+          {"dateTime": "2024-06-09T23:45:00.000", "level": "restless", "seconds": 600},
+          {"dateTime": "2024-06-10T00:00:00.000", "level": "asleep", "seconds": 3600},
+          {"dateTime": "2024-06-10T01:00:00.000", "level": "restless", "seconds": 300},
+          {"dateTime": "2024-06-10T01:05:00.000", "level": "asleep", "seconds": 7200},
+          {"dateTime": "2024-06-10T03:05:00.000", "level": "awake", "seconds": 120},
+          {"dateTime": "2024-06-10T03:07:00.000", "level": "asleep", "seconds": 10800},
+          {"dateTime": "2024-06-10T06:07:00.000", "level": "restless", "seconds": 480},
+          {"dateTime": "2024-06-10T06:15:00.000", "level": "awake", "seconds": 900}
+        ],
+        "shortData": [],
+        "summary": {
+          "restless": {"count": 3, "minutes": 23},
+          "awake": {"count": 2, "minutes": 17},
+          "asleep": {"count": 3, "minutes": 430}
+        }
+      }
+    }
+  ]
+}
+```
+
 ### Activities: Daily Summary (`activities-*.json` in Global Export Data)
 
 ```json
