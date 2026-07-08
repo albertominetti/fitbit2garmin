@@ -17,9 +17,6 @@ from .writer import (
     write_weight_csv,
 )
 
-AVG_WALK_CADENCE = 100
-STRIDE_LENGTH_M = 0.75
-
 logger = logging.getLogger(__name__)
 
 
@@ -82,50 +79,6 @@ def _build_hr_only_activities(data: FitbitData, min_samples: int = 10) -> list[A
     return extras
 
 
-def _build_daily_activities(data: FitbitData) -> list[Activity]:
-    """Create Walking TCX activities from daily step/calorie/distance summaries."""
-    if not data.daily_summaries:
-        return []
-    existing_keys: set[tuple] = set()
-    for act in data.activities:
-        d = act.start_time.date()
-        existing_keys.add((d, act.sport))
-
-    extras: list[Activity] = []
-    for ds in data.daily_summaries:
-        if ds.steps <= 0:
-            continue
-        key = (ds.date, "Walking")
-        if key in existing_keys:
-            continue
-        existing_keys.add(key)
-        duration_min = ds.steps / AVG_WALK_CADENCE
-        duration_s = int(duration_min * 60)
-        if duration_s < 60:
-            continue
-        dist = ds.steps * STRIDE_LENGTH_M
-        start = datetime(ds.date.year, ds.date.month, ds.date.day, 12, 0, 0)
-        sample_interval = max(60, duration_s // 10)
-        samples: list[HeartRateSample] = []
-        for i in range(11):
-            t = start + timedelta(seconds=i * sample_interval)
-            if t > start + timedelta(seconds=duration_s):
-                t = start + timedelta(seconds=duration_s)
-            samples.append(HeartRateSample(t, 0, 0))
-        act = Activity(
-            name=f"Daily {ds.date.isoformat()}",
-            sport="Walking",
-            start_time=start,
-            duration_seconds=duration_s,
-            calories=int(ds.calories),
-            distance_meters=dist,
-            steps=ds.steps,
-            heart_rate_samples=samples,
-        )
-        extras.append(act)
-    return extras
-
-
 def convert(
     input_dir: str,
     output_dir: str,
@@ -165,11 +118,6 @@ def convert(
     _match_hr_to_activities(data)
 
     tcx_activities = list(data.activities)
-
-    if data.daily_summaries:
-        daily_acts = _build_daily_activities(data)
-        tcx_activities.extend(daily_acts)
-        logger.info("Added %d daily summary activities (steps/calories/distance)", len(daily_acts))
 
     if hr_only:
         extras = _build_hr_only_activities(data)

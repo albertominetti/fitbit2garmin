@@ -14,8 +14,7 @@ TCX_NS = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
 ET.register_namespace("", TCX_NS)
 
 
-def _make_tcx_trackpoint(timestamp_iso: str, bpm: int | None = None,
-                         cadence: int | None = None) -> ET.Element:
+def _make_tcx_trackpoint(timestamp_iso: str, bpm: int | None = None) -> ET.Element:
     tp = ET.Element(f"{{{TCX_NS}}}Trackpoint")
     t = ET.SubElement(tp, f"{{{TCX_NS}}}Time")
     t.text = timestamp_iso
@@ -23,9 +22,6 @@ def _make_tcx_trackpoint(timestamp_iso: str, bpm: int | None = None,
         hr = ET.SubElement(tp, f"{{{TCX_NS}}}HeartRateBpm")
         v = ET.SubElement(hr, f"{{{TCX_NS}}}Value")
         v.text = str(bpm)
-    if cadence is not None:
-        c = ET.SubElement(tp, f"{{{TCX_NS}}}Cadence")
-        c.text = str(cadence)
     return tp
 
 
@@ -62,25 +58,19 @@ def write_activity_tcx(activity: Activity, output_dir: str) -> str | None:
         hr_mx = ET.SubElement(lap, f"{{{TCX_NS}}}MaximumHeartRateBpm")
         hmx = ET.SubElement(hr_mx, f"{{{TCX_NS}}}Value")
         hmx.text = str(activity.max_heart_rate)
-    cadence = None
-    if activity.sport == "Walking" and activity.steps > 0 and activity.duration_seconds > 0:
-        cadence = round(activity.steps / (activity.duration_seconds / 60))
-
     track = ET.SubElement(lap, f"{{{TCX_NS}}}Track")
     if activity.heart_rate_samples:
         for sample in activity.heart_rate_samples:
             ts = sample.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
-            c = cadence if sample.bpm == 0 else None
-            tp = _make_tcx_trackpoint(ts, sample.bpm if sample.bpm > 0 else None, cadence=c)
+            tp = _make_tcx_trackpoint(ts, sample.bpm)
             track.append(tp)
     else:
-        tp = _make_tcx_trackpoint(start_iso, activity.avg_heart_rate, cadence=cadence)
+        tp = _make_tcx_trackpoint(start_iso, activity.avg_heart_rate)
         track.append(tp)
         end_ts = (activity.start_time + timedelta(seconds=activity.duration_seconds))
         tp2 = _make_tcx_trackpoint(
             end_ts.strftime("%Y-%m-%dT%H:%M:%SZ"),
             None,
-            cadence=cadence,
         )
         track.append(tp2)
     tree = ET.ElementTree(root)
