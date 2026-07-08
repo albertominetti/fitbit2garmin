@@ -291,14 +291,14 @@ Date,Start Time,End Time,Duration (min),Minutes Asleep,Minutes Awake,Efficiency,
 
 ### CSV: Daily Summary
 
-Daily totals for steps, calories, and distance:
+Daily totals for steps, calories, and distance — available as a compact reference file. Steps, calories, and distance are also **exported as TCX Walking activities** (see above).
 
 ```
 Date,Steps,Calories,Distance (m)
 2024-01-15,12400,2520.0,14.3
 ```
 
-> **Note:** Distance units in Fitbit's `distance-*.json` files are locale-dependent (km for metric, miles for imperial). The converter passes the raw value through. Adjust units in the CSV if needed.
+> **Note:** Distance in this CSV comes from Fitbit's `distance-*.json` files — units are locale-dependent (km for metric, miles for imperial). The TCX walking version uses `steps × 0.75 m` stride estimate instead.
 
 ---
 
@@ -313,9 +313,9 @@ Date,Steps,Calories,Distance (m)
 | **Sleep score** | Efficiency % | Sleep score (1-100) | ❌ |
 | **Weight & BMI** | Manual or scale logs | Manual or scale logs | ✅ CSV |
 | **Body fat %** | With Aria scale | With Index scale | ✅ CSV |
-| **Steps** | Daily total | Daily total | ❌ |
-| **Calories** | Active + BMR combined | Active + Resting split | ❌ |
-| **Distance** | Daily total | Daily total (GPS-based) | ❌ |
+| **Steps** | Daily total | Daily total | ✅ TCX (Walking) |
+| **Calories** | Active + BMR combined | Active + Resting split | ✅ TCX (Walking) |
+| **Distance** | Daily total | Daily total (GPS-based) | ✅ TCX (Walking) |
 | **GPS tracks** | Per workout | Per activity .FIT/.GPX | ⚠️ partial |
 | **VO2 Max** | Cardio Fitness Score | VO2 Max estimate | ❌ |
 | **Floors climbed** | Barometric | Barometric (most devices) | ❌ |
@@ -372,6 +372,21 @@ When `activityTypeId` is not present, the converter falls back to keyword matchi
 
 - **Distance**: Passed through in meters. Both the `activities-*.json` (with `distanceUnit: "METERS"`) and `distance-*.json` are read
 - **Calories**: Passed through directly as integer from the activity record
+
+### Daily Summary (Steps → Walking TCX)
+
+When step data is present from `steps-*.json` together with calories and distance, the converter creates a **Walking TCX activity** for each day that doesn't already have a recorded walking/running activity:
+
+| Parameter | Derivation |
+|---|---|
+| **Duration** | `steps / 100 spm` (avg walking cadence) |
+| **Distance** | `steps × 0.75 m` (avg stride length) |
+| **Calories** | Copied from `calories-*.json` |
+| **Cadence** | Encoded per-trackpoint as `100 spm` |
+| **Sport** | Walking |
+| **Name** | `Daily YYYY-MM-DD` |
+
+If a day already has a recorded walking or running activity, the daily summary is skipped for that day to avoid double-counting.
 
 ---
 
@@ -535,6 +550,8 @@ python -m fitbit2garmin ~/Downloads/Takeout/Fitbit -o ./garmin_data \
 
 Repeat for each activity (Garmin does not support batch upload). Each uploaded activity will appear in your history with duration, distance, calories, heart rate data, and sport type.
 
+**Daily summary TCX** — For days without a recorded activity, the converter creates a **Walking** TCX from your step count. Duration is calculated using an average walking cadence of 100 spm, and distance is estimated as `steps × 0.75 m` stride length. Cadence is encoded per-trackpoint so Garmin registers the step data.
+
 ### Body Composition (CSV)
 
 1. In Garmin Connect, go to **Health Stats** (in the main menu)
@@ -550,9 +567,13 @@ Repeat for each activity (Garmin does not support batch upload). Each uploaded a
 
 Garmin will show these measurements alongside your Garmin-device readings.
 
-### Sleep and Daily Summary (CSV)
+### Sleep (CSV)
 
-Garmin Connect **does not** support importing sleep or daily step/calorie/distance data via CSV. These files are provided for your personal records and can be opened in any spreadsheet application (Excel, Google Sheets, Numbers).
+Garmin Connect **does not** support importing sleep data via CSV. The sleep CSV is provided for your personal records and can be opened in any spreadsheet application (Excel, Google Sheets, Numbers).
+
+### Daily Summary (CSV)
+
+Daily steps, calories, and distance are **exported as TCX Walking activities** (see above). The `daily_summary.csv` is a compact reference file for your records.
 
 ---
 
@@ -581,14 +602,15 @@ sample/
 │   └── Body/
 │       └── weight-2024-01-20.json         # Weight with timestamp
 │
-└── output/
-    ├── activities/
-    │   ├── 20240115_073000_Running.tcx     # Morning Run with HR trackpoints
-    │   ├── 20240115_183000_Walking.tcx     # Evening Walk with HR trackpoints
-    │   └── 20240116_090000_Cycling.tcx     # Cycling with 12 HR trackpoints
-    ├── body_composition.csv                # 4 weight entries
-    ├── sleep.csv                           # 2 sleep sessions
-    └── daily_summary.csv                   # 2 days of summaries
+    └── output/
+        ├── activities/
+        │   ├── 20240115_073000_Running.tcx     # Morning Run with HR trackpoints
+        │   ├── 20240115_183000_Walking.tcx     # Evening Walk with HR trackpoints
+        │   ├── 20240116_090000_Cycling.tcx     # Cycling with 12 HR trackpoints
+        │   └── 20240116_120000_Walking.tcx     # Daily summary: 8900 steps, 668 kcal, 6675 m
+        ├── body_composition.csv                # 4 weight entries
+        ├── sleep.csv                           # 2 sleep sessions
+        └── daily_summary.csv                   # 2 days of summaries
 ```
 
 To regenerate the sample output:
@@ -609,7 +631,7 @@ python -m fitbit2garmin sample/input -o sample/output --hr-only
 | **Cycling activity** | `activities-2024-01-16.json` | Biking sport type, longer duration |
 | **Weight from Global Export** | `weight-2024-01-15.json` | Date-only timestamps, multiple entries |
 | **Weight from Body folder** | `Body/weight-2024-01-20.json` | Datetime timestamps in Body/ subfolder |
-| **Steps + calories + distance** | `*-2024-01-{15,16}.json` | Daily summary aggregation |
+| **Steps + calories + distance** | `*-2024-01-{15,16}.json` | Daily summary → Walking TCX with cadence |
 
 ---
 
@@ -662,7 +684,7 @@ Date,Weight,BMI,BodyFat,BoneMass,MuscleMass,BodyWater
 | **No GPS trackpoints** | Fitbit's `activities-*.json` exports do not include GPS coordinates or route data. TCX files contain time + heart rate only, not lat/lon |
 | **No sleep import** | Garmin Connect does not expose a sleep data import API. Sleep CSVs are for personal reference only |
 | **No batch upload to Garmin** | Garmin Connect's web UI requires selecting TCX files one-by-one |
-| **Distance units ambiguous** | Daily summary distance from `distance-*.json` has no unit field. Value is passed as-is (km for metric users, miles for imperial) |
+| **Distance units ambiguous** | Daily summary distance from `distance-*.json` has no unit field. Daily TCX walking activities use `steps × 0.75 m` stride estimate instead |
 | **No SpO2 / HRV / Stress** | These sensor data types from Fitbit are not covered by this converter |
 | **No food / nutrition** | Fitbit food logs are not converted |
 | **No floors** | Fitbit floor data (`floors-*.json`) is not currently processed |
